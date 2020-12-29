@@ -64,11 +64,11 @@ $ saizeriya -la \
 [ハイパーシェル芸キュアエンジニアさん](https://twitter.com/grethlen)が作成された、*おじさんがLINEやメールで送ってきそうな文を生成するコマンド*
 
 ```sh
-$ sudo amazon-linux-extras install -y golang1.11
-$ go get -u github.com/greymd/ojichat
-$ export PATH=$PATH:$HOME/go/bin
+$ GOPATH=/tmp/go GOBIN=/home/cloudshell-user/bin go get -u github.com/greymd/ojichat
 $ ojichat so
 ```
+
+<!-- 
 
 ---
 
@@ -77,9 +77,9 @@ $ ojichat so
 cmatrix 風に ojichat の文言で端末を埋め尽くしてくれる
 
 ```sh
-$ go get -u github.com/greymd/ojichatrix
+$ GOPATH=/tmp/go GOBIN=/home/cloudshell-user/bin go get -u github.com/greymd/ojichatrix
 $ ojichatrix
-```
+``` -->
 
 ---
 
