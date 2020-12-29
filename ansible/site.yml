@@ -1,0 +1,100 @@
+---
+
+- hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: yum packages
+      yum:
+        name:
+          - glibc-langpack-ja
+          - cowsay
+          - gcc
+          - golang
+      become: true
+
+    - name: prompt
+      lineinfile:
+        path: /home/cloudshell-user/.bashrc
+        regexp: '^export PS1='
+        line: export PS1='[\[\e[36m\]\u@\h \[\e[32m\]\W\[\e[m\]]\$ '
+
+    - name: GOBIN
+      lineinfile:
+        path: /home/cloudshell-user/.bashrc
+        line: '^export PATH=$PATH:$HOME/go/bin'
+
+    - name: bin directory
+      file:
+        path: '$HOME/bin'
+        state: directory
+
+    - name: saizeriya
+      get_url:
+        url: https://raw.githubusercontent.com/3socha/saizeriya/master/saizeriya
+        dest: '$HOME/bin/saizeriya'
+        mode: '0755'
+
+    - name: echo-sd
+      get_url:
+        url: https://raw.githubusercontent.com/fumiyas/home-commands/master/echo-sd
+        dest: '$HOME/bin/echo-sd'
+        mode: '0755'
+
+    - name: check nyancat
+      stat:
+        path: '$HOME/bin/nyancat'
+      register: check_nyancat
+
+    - name: clone nyancat repo
+      git:
+        repo: https://github.com/klange/nyancat.git
+        dest: /tmp/nyancat
+      when: check_nyancat.stat.exists == False
+
+    - name: make nyancat
+      make:
+        chdir: /tmp/nyancat
+      when: check_nyancat.stat.exists == False
+
+    - name: nyancat
+      copy:
+        src: /tmp/nyancat/src/nyancat
+        dest: '$HOME/bin/nyancat'
+        mode: '0755'
+      when: check_nyancat.stat.exists == False
+
+    - name: check ojichat
+      stat:
+        path: '$HOME/go/bin/ojichat'
+      register: check_ojichat
+
+    - name: ojichat
+      shell: go get -u github.com/greymd/ojichat
+      environment:
+        GOPATH: /tmp/go
+        GOBIN: /home/cloudshell-user/go/bin
+      when: check_ojichat.stat.exists == false
+
+    - name: check ojichatrix
+      stat:
+        path: '$HOME/go/bin/ojichatrix'
+      register: check_ojichatrix
+
+    - name: ojichatrix
+      shell: go get -u github.com/greymd/ojichatrix
+      environment:
+        GOPATH: /tmp/go
+        GOBIN: /home/cloudshell-user/go/bin
+      when: check_ojichatrix.stat.exists == false
+
+    - name: check owari
+      stat:
+        path: '$HOME/go/bin/owari'
+      register: check_owari
+
+    - name: owari
+      shell: go get -u github.com/xztaityozx/owari
+      environment:
+        GOPATH: /tmp/go
+        GOBIN: /home/cloudshell-user/go/bin
+      when: check_owari.stat.exists == false

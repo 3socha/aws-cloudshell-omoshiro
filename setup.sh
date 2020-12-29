@@ -5,22 +5,22 @@ mkdir -p "$BIN_DIR"
 
 # prompt
 PS1='[\[\e[36m\]\u@\h \[\e[32m\]\W\[\e[m\]]\$ '
-grep 'export PS1=' "$HOME/.bashrc" >& /dev/null || {
-  echo "export PS1='$PS1'" >> "$HOME/.bashrc"
+grep 'export PS1=' "$HOME/.bashrc" >&/dev/null || {
+  echo "export PS1='$PS1'" >>"$HOME/.bashrc"
 }
 
 # GOBIN
-grep -E "export PATH=\$PATH:$GO_BIN_DIR" "$HOME/.bashrc" >& /dev/null || {
-  echo "export PATH=\$PATH:$GO_BIN_DIR" >> "$HOME/.bashrc"
+grep -E "export PATH=\$PATH:$GO_BIN_DIR" "$HOME/.bashrc" >&/dev/null || {
+  echo "export PATH=\$PATH:$GO_BIN_DIR" >>"$HOME/.bashrc"
 }
 
 # glibc-langpack-ja
-rpm -qa | grep glibc-langpack-ja >& /dev/null || {
+rpm -qa | grep glibc-langpack-ja >&/dev/null || {
   sudo yum install -y glibc-langpack-ja
 }
 
 # cowsay
-rpm -qa | grep cowsay >& /dev/null || {
+rpm -qa | grep cowsay >&/dev/null || {
   sudo yum install -y cowsay
 }
 
@@ -46,8 +46,8 @@ rpm -qa | grep cowsay >& /dev/null || {
 }
 
 # golang
-rpm -qa | grep golang >& /dev/null || {
-  sudo amazon-linux-extras install -y golang1.11
+rpm -qa | grep golang >&/dev/null || {
+  sudo yum install -y golang
 }
 
 # ojichat
