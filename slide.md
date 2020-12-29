@@ -57,8 +57,6 @@ $ saizeriya -la \
   | xargs echo-sd --stress
 ```
 
-<!-- CloudShell じゃなくて良いけど -->
-
 ---
 
 # [ojichat](https://github.com/greymd/ojichat)
@@ -92,7 +90,7 @@ $ ojichatrix
 
 ---
 
-# SSM Session Manager を使ってみよう
+# SSM Session Manager を使ってみる
 
 - Systems Manager Session Manager
     - EC2 インスタンスへのセキュアなリモートアクセスを提供する
@@ -146,11 +144,11 @@ $ aws ssm create-activation \
 (CloudShell) $ sudo amazon-ssm-agent &
 ```
 
-- 20分程度？放っておくと AWS CloudShell のセッションが終了されるため、適当にリフレッシュ
-
 ```sh
 (Local) $ aws ssm start-session --target mi-xxxxxxxxxxxxxxxxx
 ```
+
+- 20分程度放っておくと AWS CloudShell のセッションが終了されるため、適当にリフレッシュしておく
 
 ---
 # SSM Session Manager 経由で SSH 接続したい
@@ -201,15 +199,6 @@ Host cloudshell
 
 ---
 
-# だいたいできた
-## 日本語が化ける場合
-
-```sh
-$ sudo yum install -y glibc-langpack-ja
-```
-
----
-
 # CloudShell での SSM Agent 使いどころ?
 
 1. ファイルを scp で直接転送したい
@@ -239,26 +228,11 @@ $ owari kan -g -a so
 
 ---
 
-# おまけ - 細かな設定手順など
+# おまけ - 詳細な設定手順など
 
 ---
 
-# nyancat
-
-```sh
-$ git clone --depth 1 https://github.com/klange/nyancat.git
-$ sudo yum install -y gcc
-$ (cd nyancat && make)
-$ install --mode 755 nyancat/src/nyancat $HOME/bin/nyancat
-$ rm -rf nyancat
-$ nyancat
-```
-
----
-
----
-
-# アドバンストインスタンス層の有効化
+# アドバンストインスタンスティアの有効化
 
 ```sh
 $ aws ssm update-service-setting \
@@ -277,13 +251,12 @@ $ aws ssm get-service-setting \
 ```
 
 - 必要な権限
-    - `ssm:GetServiceSetting`
     - `ssm:UpdateServiceSetting`
+    - `ssm:GetServiceSetting`
 - 参考: [アドバンストインスタンス層の有効化 (AWS CLI)](https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/systems-manager-managedinstances-advanced.html#systems-manager-managedinstances-advanced-enabling-cli)
 ---
 
 # IAM サービスロールを作成（なければ）
-
 
 ```sh
 $ aws iam create-role \
@@ -316,3 +289,81 @@ $ aws iam attach-role-policy \
 
 - 必要な権限
     - `iam:AttacheRolePolicy`
+
+---
+
+# おまけ - あとかたづけ
+
+---
+
+# マネージドインスタンスの登録を解除
+
+```sh
+$ aws ssm deregister-managed-instance --instance-id mi-xxxxxxxxxxxxxxxxx
+```
+
+- 必要な権限
+    - `ssm:DeregisterManagedInstance`
+
+---
+# SSM ハイブリッドアクティベーションを削除
+
+```sh
+$ aws ssm delete-activation --activation-id  xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+```
+
+- 必要な権限
+    - `ssm:DeleteActivation`
+
+---
+
+# SSM アドバンストインスタンスティアの無効化
+
+```sh
+$ aws ssm reset-service-setting \
+  --setting-id "arn:aws:ssm:$AWS_REGION:$(
+      aws sts get-caller-identity --output text --query Account
+    ):servicesetting/ssm/managed-instance/activation-tier" \
+  --setting-value standard
+```
+
+- 必要な権限
+    - `ssm:ResetServiceSetting`
+    - `ssm:GetServiceSetting`
+- 少し時間がかかる
+
+---
+
+# IAM サービスロールを削除（不要なら）
+
+
+```sh
+$ aws iam detach-role-policy \
+  --role-name AmazonEC2RunCommandRoleForManagedInstances \
+  --policy-arn arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+```
+
+```sh
+$ aws iam delete-role \
+  --role-name AmazonEC2RunCommandRoleForManagedInstances
+```
+
+- 必要な権限
+    - `iam:DetachRolePolicy`
+    - `iam:CreateRole`
+
+---
+
+# おまけ - スライド中で使用したコマンド類
+
+- [echo-sd](https://github.com/fumiyas/home-commands/blob/master/echo-sd)
+- [saizeriya](https://github.com/3socha/saizeriya)
+- [nyancat](https://github.com/klange/nyancat)
+- [owari](https://github.com/xztaityozx/owari)
+---
+
+# おまけ - 日本語が化ける場合
+
+```sh
+$ sudo yum install -y glibc-langpack-ja
+```
