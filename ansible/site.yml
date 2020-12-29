@@ -14,34 +14,6 @@
           - openssh-server
       become: true
 
-    # - name: enable golang1.11
-    #   shell: amazon-linux-extras enable -y golang1.11
-    #   become: true
-
-    # - name: golang1.11
-    #   yum:
-    #     name: golang-1.11.3
-    #   become: true
-
-    # - name: check go
-    #   stat:
-    #     path: /usr/local/go/bin/go
-    #   register: check_go
-
-    # - name: download go
-    #   unarchive:
-    #     src: https://golang.org/dl/go1.13.15.linux-amd64.tar.gz
-    #     remote_src: yes
-    #     dest: /usr/local
-    #   become: true
-    #   when: check_go.stat.exists == False
-
-    # - name: PATH env
-    #   lineinfile:
-    #     path: /home/cloudshell-user/.bashrc
-    #     regexp: '^export PATH='
-    #     line: 'export PATH=$PATH:/usr/local/go/bin'
-
     - name: prompt
       lineinfile:
         path: /home/cloudshell-user/.bashrc
@@ -98,19 +70,21 @@
       environment:
         GOPATH: /tmp/go
         GOBIN: /home/cloudshell-user/bin
+        GO111MODULE: 'off'
       when: check_ojichat.stat.exists == False
 
-    # - name: check ojichatrix
-    #   stat:
-    #     path: '$HOME/bin/ojichatrix'
-    #   register: check_ojichatrix
+    - name: check ojichatrix
+      stat:
+        path: '$HOME/bin/ojichatrix'
+      register: check_ojichatrix
 
-    # - name: ojichatrix
-    #   shell: go get -u github.com/greymd/ojichatrix
-    #   environment:
-    #     GOPATH: /tmp/go
-    #     GOBIN: /home/cloudshell-user/bin
-    #   when: check_ojichatrix.stat.exists == False
+    - name: ojichatrix
+      shell: go get -u github.com/greymd/ojichatrix
+      environment:
+        GOPATH: /tmp/go
+        GOBIN: /home/cloudshell-user/bin
+        GO111MODULE: 'off'
+      when: check_ojichatrix.stat.exists == False
 
     - name: check owari
       stat:
